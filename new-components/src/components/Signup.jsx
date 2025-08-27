@@ -1,76 +1,149 @@
-const SignupForm = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 transition-shadow duration-300 hover:shadow-2xl">
-       
-        <h2 className="text-3xl font-bold text-center text-[#1E40AF]">Create an Account</h2>
-        <p className="text-center text-gray-500 mt-2 mb-8">
-          Sign up to get started with our platform
-        </p>
+import { useState } from "react";
+import { FaGithub, FaFacebook } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
-      
-        <form className="space-y-5">
+const SignupForm = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    emal: "",
+    password:"",
+  })
+
+const [errors, setErrors] = useState({});
+  const [passwordStrength, setPasswordStrength] = useState("");
+
+   const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    if (e.target.name === "password") {
+      checkPasswordStrength(e.target.value);
+    }
+  };
+// validation function
+  const validate = () => {
+    let tempErrors = {};
+
+    if (!formData.name.trim()) tempErrors.name = "Name is required";
+    if (!formData.email.match(/^\S+@\S+\.\S+$/))
+      tempErrors.email = "Invalid email address";
+    if (formData.password.length < 6)
+      tempErrors.password = "Password must be at least 6 characters";
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
+  // password strength check
+   const checkPasswordStrength = (password) => {
+    if (password.length < 6) {
+      setPasswordStrength("Weak");
+    } else if (password.match(/[A-Z]/) && password.match(/[0-9]/)) {
+      setPasswordStrength("Strong");
+    } else {
+      setPasswordStrength("Medium");
+    }
+  };
+
+  // submit
+    const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validate()) {
+      alert("Form submitted!");
+      console.log(formData);
+    }
+  };
+
+
+
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-[#d4af37]">
+      <div className="w-full max-w-md text-white bg-[#000000] shadow-lg rounded-2xl p-8">
+        <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
+
+        {/* Social logins */}
+        <div className="flex gap-4 mb-6 justify-center">
+          <button className="p-2 border rounded-full hover:bg-gray-100">
+            <FcGoogle size={24} />
+          </button>
+          <button className="p-2 border rounded-full hover:bg-gray-100">
+            <FaGithub size={24} />
+          </button>
+          <button className="p-2 border rounded-full hover:bg-gray-100 text-blue-600">
+            {/* <FaFacebook size={24} /> */}
+            <FaFacebook />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label className="block text-sm font-medium">Full Name</label>
             <input
               type="text"
-              placeholder="John Doe"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:border-[#1E40AF] transition-all"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="mt-1 w-full p-2 border rounded-md border-[#d4af37] focus:ring focus:ring-blue-300"
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm">{errors.name}</p>
+            )}
           </div>
 
+          {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label className="block text-sm font-medium">Email</label>
             <input
               type="email"
-              placeholder="you@example.com"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:border-[#1E40AF] transition-all"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="mt-1 w-full p-2 border border-[#d4af37]  rounded-md focus:ring focus:ring-blue-300"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email}</p>
+            )}
           </div>
 
+          {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium">Password</label>
             <input
               type="password"
-              placeholder="********"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 
-              focus:outline-none focus:ring-2 focus:ring-[#1E40AF] focus:border-[#1E40AF] transition-all"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="mt-1 w-full p-2 border border-[#d4af37] text-white rounded-md focus:ring focus:ring-blue-300"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password}</p>
+            )}
+            {formData.password && (
+              <p
+                className={`text-sm ${
+                  passwordStrength === "Weak"
+                    ? "text-red-500"
+                    : passwordStrength === "Medium"
+                    ? "text-yellow-500"
+                    : "text-green-500"
+                }`}
+              >
+                Strength: {passwordStrength}
+              </p>
+            )}
           </div>
 
           <button
             type="submit"
-            className="w-full text-white font-semibold py-3 rounded-lg shadow-md 
-            bg-gradient-to-r from-[#1E40AF] via-[#1E40AF] to-[#9333EA]
-            hover:scale-[1.02] hover:shadow-lg transition-transform duration-300"
+            className="w-full bg-[#d4af37] text-white p-2 rounded-md hover:bg-blue-700"
           >
             Sign Up
           </button>
         </form>
-
-       
-        <div className="flex items-center my-6">
-          <hr className="flex-grow border-gray-300" />
-          <span className="mx-3 text-gray-400 text-sm">OR</span>
-          <hr className="flex-grow border-gray-300" />
-        </div>
-
-        <button
-          type="button"
-          className="w-full flex items-center justify-center gap-2 border border-gray-300 
-          py-3 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition"
-        >
-          Continue with Google
-        </button>
-
-        <p className="text-center text-gray-600 text-sm mt-6">
-          Already have an account?{" "}
-          <a href="/login" className="text-[#9333EA] font-medium hover:underline">Login</a>
-        </p>
       </div>
     </div>
-  );
+
+          )
 }
 export default SignupForm
